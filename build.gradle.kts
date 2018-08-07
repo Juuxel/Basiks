@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.2.51"
+    kotlin("jvm") version "1.2.60"
 }
 
 group = "juuxel.basiks"
@@ -14,6 +14,12 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.2.0")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 configure<JavaPluginConvention> {
