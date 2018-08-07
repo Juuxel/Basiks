@@ -7,8 +7,8 @@ package juuxel.basiks
  * An optional value of type [T].
  */
 sealed class Option<out T> {
-    abstract fun toNullable(): T?
-    open operator fun component1(): T? = toNullable()
+    open operator fun component1(): T? = null
+    fun toNullable(): T? = component1()
     abstract fun toEither(): Either<None, T>
 }
 
@@ -16,7 +16,6 @@ sealed class Option<out T> {
  * A present optional value containing [value].
  */
 data class Some<out T>(val value: T) : Option<T>() {
-    override fun toNullable(): T? = value
     override fun toEither(): Either<None, T> = Right(value)
 }
 
@@ -24,7 +23,6 @@ data class Some<out T>(val value: T) : Option<T>() {
  * An optional value that is not present.
  */
 object None : Option<Nothing>() {
-    override fun toNullable(): Nothing? = null
     override fun toEither(): Either<None, Nothing> = Left(this)
     override fun toString() = "None"
 }
@@ -42,6 +40,9 @@ fun <T : Any> T?.toOption(): Option<T>
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T : Any> Iterable<T?>.toOptions(): List<Option<T>> = map { it.toOption() }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <R, T : R> Option<T>.orElse(elseValue: R): R = orElse { elseValue }
 
 inline fun <R, T : R> Option<T>.orElse(supplier: () -> R): R = when (this) {
     is Some -> value
