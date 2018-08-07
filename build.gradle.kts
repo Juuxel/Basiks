@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.2.51"
 }
 
-group = "com.github.juuxel.basiks"
+group = "juuxel.basiks"
 version = "0.1.0"
 
 repositories {
