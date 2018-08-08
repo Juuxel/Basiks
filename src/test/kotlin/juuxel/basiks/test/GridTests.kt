@@ -1,7 +1,7 @@
 package juuxel.basiks.test
 
 import juuxel.basiks.grid.Grid
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class GridTests {
@@ -27,5 +27,25 @@ class GridTests {
         }
 
         assertEquals(expected, built)
+    }
+
+    @Test fun fillMutableGrid() {
+        val grid = Grid.Mutable<String>(3, 3)
+        val filled = grid.fill("Filled")
+
+        assertSame(grid, filled)
+        assertTrue(filled.all { it == "Filled" })
+    }
+
+    @Test fun gridIteratorTest() {
+        val grid = Grid(5, 5, 3)
+        var total = 0
+        val target = 2 * 5 * (0 + 1 + 2 + 3 + 4) // 100
+
+        for ((x, y, _) in grid.gridIterator()) {
+            total += x + y
+        }
+
+        assertEquals(target, total)
     }
 }

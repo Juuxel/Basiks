@@ -5,6 +5,7 @@ package juuxel.basiks.grid
 import juuxel.basiks.iterable.with
 
 typealias GridGenerator<E> = (x: Int, y: Int) -> E
+typealias GridIterator<E> = Iterator<Triple<Int, Int, E>>
 
 /**
  * A two-dimensional grid of values of type [E].
@@ -12,14 +13,13 @@ typealias GridGenerator<E> = (x: Int, y: Int) -> E
  * @property width the grid width
  * @property height the grid height
  */
-sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable {
+sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<E> {
     internal val array: Array<Array<@UnsafeVariance E>> = ArrayCreator.createArray(width, height)
 
     val rows: Array<Array<@UnsafeVariance E>> get() = array.clone()
 
     operator fun get(x: Int, y: Int): E = array[y][x]
 
-    abstract fun fill(value: @UnsafeVariance E): Grid<E>
     abstract fun toImmutableGrid(): Immutable<E>
     abstract fun toMutableGrid(): Mutable<@UnsafeVariance E>
 
@@ -27,6 +27,14 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable {
     override fun hashCode() = array.contentDeepHashCode()
     override fun toString(): String = array.contentDeepToString()
     fun toList(): List<E> = rows.flatten().toList()
+
+    final override fun iterator(): Iterator<E> = rows.flatMap { it.toList() }.iterator()
+
+    fun gridIterator(): GridIterator<E> = rows.mapIndexed { y, row ->
+        row.mapIndexed { x, elem ->
+            Triple(x, y, elem)
+        }
+    }.flatten().iterator()
 
     companion object {
         @Suppress("NOTHING_TO_INLINE")
@@ -46,13 +54,6 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable {
     }
 
     class Immutable<out E>(width: Int, height: Int) : Grid<E>(width, height) {
-        override fun fill(value: @UnsafeVariance E): Grid<E> {
-            val grid = Mutable<E>(width, height)
-            grid.fill(value)
-
-            return grid.toImmutableGrid()
-        }
-
         override fun toImmutableGrid(): Immutable<E> = this
 
         override fun toMutableGrid(): Mutable<@UnsafeVariance E> = Mutable<E>(
@@ -72,7 +73,7 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable {
             array[y][x] = value
         }
 
-        override fun fill(value: E): Grid<E> {
+        fun fill(value: E): Mutable<E> {
             for (y in 0 until height) {
                 for (x in 0 until width) {
                     array[y][x] = value
