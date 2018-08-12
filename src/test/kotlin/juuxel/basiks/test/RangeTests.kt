@@ -1,6 +1,6 @@
 package juuxel.basiks.test
 
-import juuxel.basiks.iterable.with
+import juuxel.basiks.iterable.combine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -13,7 +13,7 @@ class RangeTests {
             }
         }.map { (x, y) -> x + y }
 
-        val result = ((0..10) with (0..5)).map { (x, y) -> x + y }
+        val result = combine(0..10, 0..5).map { (x, y) -> x + y }
 
         assertEquals(excepted, result)
     }

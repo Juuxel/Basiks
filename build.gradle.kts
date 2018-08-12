@@ -1,9 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     java
     kotlin("jvm") version "1.2.60"
     maven
+    id("org.jetbrains.dokka") version "0.9.17"
 }
 
 group = "juuxel.basiks"
@@ -21,6 +23,11 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<DokkaTask> {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
 }
 
 configure<JavaPluginConvention> {

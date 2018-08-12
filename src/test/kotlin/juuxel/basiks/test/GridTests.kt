@@ -1,6 +1,7 @@
 package juuxel.basiks.test
 
 import juuxel.basiks.grid.Grid
+import juuxel.basiks.grid.gridOf
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -47,5 +48,16 @@ class GridTests {
         }
 
         assertEquals(target, total)
+    }
+
+    @Test fun gridOfTest() {
+        val expected = Grid(2, 2) { x, y -> x + y }
+        val actual = gridOf(
+            2, 2,
+            0, 1,
+            1, 2
+        )
+
+        assertEquals(expected, actual)
     }
 }
