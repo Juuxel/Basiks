@@ -1,9 +1,6 @@
 package juuxel.basiks.test
 
-import juuxel.basiks.Err
-import juuxel.basiks.Ok
-import juuxel.basiks.Result
-import juuxel.basiks.orElse
+import juuxel.basiks.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

@@ -108,6 +108,12 @@ fun <T : Any> T?.toOption(): Option<T>
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T : Any> Iterable<T?>.toOptions(): List<Option<T>> = map { it.toOption() }
 
+/**
+ * Converts all values in `this` `Iterable` to nullable values.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T : Any> Iterable<Option<T>>.toNullables(): List<T?> = map { it.toNullable() }
+
 @Suppress("NOTHING_TO_INLINE")
 inline fun <R, T : R> Option<T>.orElse(elseValue: R): R = orElse { elseValue }
 

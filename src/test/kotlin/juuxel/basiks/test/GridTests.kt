@@ -11,7 +11,7 @@ class GridTests {
         /* [A, B,
             C, D]
          */
-        val expected = Grid.Mutable<String>(2, 2)
+        val expected = Grid.Mutable.ofNulls<String>(2, 2)
         expected[0, 0] = "A"
         expected[1, 0] = "B"
         expected[0, 1] = "C"
@@ -31,7 +31,7 @@ class GridTests {
     }
 
     @Test fun fillMutableGrid() {
-        val grid = Grid.Mutable<String>(3, 3)
+        val grid = Grid.Mutable.ofNulls<String>(3, 3)
         val filled = grid.fill("Filled")
 
         assertSame(grid, filled)

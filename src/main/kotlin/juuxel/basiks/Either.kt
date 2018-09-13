@@ -6,7 +6,7 @@ package juuxel.basiks
 /**
  * `Either` represents a value of either [L] or [R].
  *
- * `Either` is right-biased for conversions to and from [Option].
+ * `Either` is right-biased for conversions to and from [Option] and [Result].
  */
 sealed class Either<out L, out R> {
     /**
@@ -58,21 +58,45 @@ inline fun <L, R, Return> Either<L, R>.fold(leftFn: (L) -> Return, rightFn: (R) 
     is Right -> rightFn(value)
 }
 
+/**
+ * Transforms the [Left] case of an [Either] with the [transform] function.
+ * @see mapLeft
+ * @see mapRight
+ * @see flatMapLeft
+ */
 inline fun <L, R, L2> Either<L, R>.mapLeft(transform: (L) -> L2): Either<L2, R> = when (this) {
     is Left -> Left(transform(value))
     is Right -> this
 }
 
+/**
+ * Transforms the [Right] case of an [Either] with the [transform] function.
+ * @see mapLeft
+ * @see flatMapLeft
+ * @see flatMapRight
+ */
 inline fun <L, R, R2> Either<L, R>.mapRight(transform: (R) -> R2): Either<L, R2> = when (this) {
     is Left -> this
     is Right -> Right(transform(value))
 }
 
+/**
+ * Transforms the [Left] case of an [Either] with the [transform] function.
+ * @see mapLeft
+ * @see mapRight
+ * @see flatMapRight
+ */
 inline fun <L, R, L2> Either<L, R>.flatMapLeft(transform: (L) -> Either<L2, R>): Either<L2, R> = when (this) {
     is Left -> transform(value)
     is Right -> this
 }
 
+/**
+ * Transforms the [Right] case of an [Either] with the [transform] function.
+ * @see mapLeft
+ * @see mapRight
+ * @see flatMapLeft
+ */
 inline fun <L, R, R2> Either<L, R>.flatMapRight(transform: (R) -> Either<L, R2>): Either<L, R2> = when (this) {
     is Left -> this
     is Right -> transform(value)

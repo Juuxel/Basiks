@@ -50,9 +50,9 @@ package juuxel.basiks
  * ```
  *
  * ### Transforming `Result`s
- * There are two functions for transforming results: [map] and [mapErr].
- * Additionally, `Result`s can be [converted to `Either`s][toEither] to use
- * [Either.flatMapLeft], [Either.flatMapRight] and [Either.fold].
+ * There are four functions for transforming results: [map], [mapErr], [flatMap], and [fold].
+ * Additionally, `Result`s can be [converted to `Either`s][toEither]
+ * to use `Either`'s transformation functions.
  *
  * ```
  * val result = maybeGetInt()
@@ -123,6 +123,26 @@ inline fun <T, E, E1> Result<T, E>.mapErr(transform: (E) -> E1): Result<T, E1> =
     is Ok -> this
     is Err -> Err(transform(error))
 }
+
+/**
+ * Transforms an [Ok] with the [transform] function, leaving [Err]s intact.
+ */
+inline fun <T, E, T1> Result<T, E>.flatMap(transform: (T) -> Result<T1, E>): Result<T1, E> =
+    when (this) {
+        is Ok -> transform(value)
+        is Err -> this
+    }
+
+/**
+ * Transforms a `Result` to `R`.
+ *
+ * Calls [ifErr] if `this` is an `Err`, and [ifOk] if `this` is an `Ok`.
+ */
+inline fun <T, E, R> Result<T, E>.fold(ifErr: (E) -> R, ifOk: (T) -> R): R =
+    when (this) {
+        is Ok -> ifOk(value)
+        is Err -> ifErr(error)
+    }
 
 /**
  * Returns [Ok.value] if this `Result` is an `Ok`, otherwise
