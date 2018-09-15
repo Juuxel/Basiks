@@ -26,11 +26,20 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
     internal val array: Array<Array<@UnsafeVariance E>> = create2DArray(width, height)
 
     /**
-     * An array containing the rows of the grid.
-     *
-     * **Note**: the array is an independent clone of the internal array
+     * A list containing the rows of the grid.
+     * @see columns
      */
-    val rows: Array<Array<@UnsafeVariance E>> get() = array.clone()
+    val rows: List<List<E>> get() = array.map { it.toList() }
+
+    /**
+     * A list containing the columns of the grid.
+     * @see rows
+     */
+    val columns: List<List<E>> get() = List(width) { x ->
+        List(height) { y ->
+            array[y][x]
+        }
+    }
 
     /**
      * Gets the element from this grid at the [x] and [y] coordinates.
@@ -73,6 +82,26 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
             Triple(x, y, elem)
         }
     }.flatten().iterator()
+
+    fun dropLeft(columns: Int = 1): Grid<E> =
+        Grid(width - columns, height) { x, y ->
+            rows[y][x + columns]
+        }
+
+    fun dropRight(columns: Int = 1): Grid<E> =
+        Grid(width - columns, height) { x, y ->
+            rows[y][x]
+        }
+
+    fun dropTop(rows: Int = 1): Grid<E> =
+        Grid(width, height - rows) { x, y ->
+            this.rows[y + rows][x]
+        }
+
+    fun dropBottom(rows: Int = 1): Grid<E> =
+        Grid(width, height - rows) { x, y ->
+            this.rows[y][x]
+        }
 
     companion object {
         /**

@@ -60,4 +60,84 @@ class GridTests {
 
         assertEquals(expected, actual)
     }
+
+    @Test fun dropLeftTest() {
+        /* [1,| 2, 3
+            4,| 5, 6]
+         */
+
+        val expected = Grid.Mutable.ofNulls<Int>(2, 2)
+        expected[0, 0] = 2
+        expected[1, 0] = 3
+        expected[0, 1] = 5
+        expected[1, 1] = 6
+
+        val base = Grid(3, 2) { x, y ->
+            x + 1 + y * 3
+        }
+
+        assertEquals(expected, base.dropLeft())
+        assertEquals(gridOf(1, 2, 3, 6), base.dropLeft(2))
+    }
+
+    @Test fun dropRightTest() {
+        /* [1, 2, |3
+            4, 5, |6]
+         */
+
+        val expected = Grid.Mutable.ofNulls<Int>(2, 2)
+        expected[0, 0] = 1
+        expected[1, 0] = 2
+        expected[0, 1] = 4
+        expected[1, 1] = 5
+
+        val base = Grid(3, 2) { x, y ->
+            x + 1 + y * 3
+        }
+
+        assertEquals(expected, base.dropRight())
+        assertEquals(gridOf(1, 2, 1, 4), base.dropRight(2))
+    }
+
+    @Test fun dropTopTest() {
+        /* [1, 2,
+            ----
+            3, 4
+            5, 6]
+         */
+
+        val expected = Grid.Mutable.ofNulls<Int>(2, 2)
+        expected[0, 0] = 3
+        expected[1, 0] = 4
+        expected[0, 1] = 5
+        expected[1, 1] = 6
+
+        val base = Grid(2, 3) { x, y ->
+            x + 1 + y * 2
+        }
+
+        assertEquals(expected, base.dropTop())
+        assertEquals(gridOf(2, 1, 5, 6), base.dropTop(2))
+    }
+
+    @Test fun dropBottomTest() {
+        /* [1, 2,
+            3, 4
+            ----
+            5, 6]
+         */
+
+        val expected = Grid.Mutable.ofNulls<Int>(2, 2)
+        expected[0, 0] = 1
+        expected[1, 0] = 2
+        expected[0, 1] = 3
+        expected[1, 1] = 4
+
+        val base = Grid(2, 3) { x, y ->
+            x + 1 + y * 2
+        }
+
+        assertEquals(expected, base.dropBottom())
+        assertEquals(gridOf(2, 1, 1, 2), base.dropBottom(2))
+    }
 }
