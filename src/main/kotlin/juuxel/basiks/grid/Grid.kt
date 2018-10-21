@@ -61,6 +61,7 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
     override fun equals(other: Any?) = this === other || other is Grid<*> && array.contentDeepEquals(other.array)
     override fun hashCode() = array.contentDeepHashCode()
     override fun toString(): String = array.contentDeepToString()
+    @Suppress("UNCHECKED_CAST") public override fun clone(): Grid<E> = super.clone() as Grid<E>
 
     /**
      * Converts this grid to a `List`.
@@ -125,6 +126,18 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
          * Creates an immutable grid of `null`s with the [width] and [height].
          */
         fun <E> ofNulls(width: Int, height: Int): Grid<E?> = Immutable(width, height)
+
+        /**
+         * Creates an immutable grid from the [rows].
+         */
+        fun <E> fromRows(rows: Iterable<Iterable<E>>): Immutable<E> =
+            Mutable.fromRows(rows).toImmutableGrid()
+
+        /**
+         * Creates an immutable grid from the [columns].
+         */
+        fun <E> fromColumns(columns: Iterable<Iterable<E>>): Immutable<E> =
+            Mutable.fromColumns(columns).toImmutableGrid()
     }
 
     /**
@@ -150,8 +163,10 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
      *
      * Use the functions in the companion object of this class to create mutable grids.
      */
-    class Mutable<E>
-    @PublishedApi internal constructor(width: Int, height: Int) : Grid<E>(width, height) {
+    class Mutable<E> @PublishedApi internal constructor(
+        width: Int,
+        height: Int
+    ) : Grid<E>(width, height) {
         /**
          * Sets the value at [x] and [y] to the [value].
          */
@@ -206,7 +221,33 @@ sealed class Grid<out E>(val width: Int, val height: Int) : Cloneable, Iterable<
             /**
              * Creates a mutable grid of `null`s.
              */
-            fun <E> ofNulls(width: Int, height: Int): Mutable<E?> = Mutable(width, height)
+            fun<E> ofNulls(width: Int, height: Int): Mutable<E?> = Mutable(width, height)
+
+            /**
+             * Creates a mutable grid from the [rows].
+             */
+            fun <E> fromRows(rows: Iterable<Iterable<E>>): Mutable<E> {
+                require(rows.any()) { "rows must not be empty" }
+                val list = rows.map { it.toList() }
+                val width = list.first().size
+
+                return Mutable(width, list.size) { x, y ->
+                    list[y][x]
+                }
+            }
+
+            /**
+             * Creates a mutable grid from the [columns].
+             */
+            fun <E> fromColumns(columns: Iterable<Iterable<E>>): Mutable<E> {
+                require(columns.any()) { "columns must not be empty" }
+                val list = columns.map { it.toList() }
+                val height = list.first().size
+
+                return Mutable(list.size, height) { x, y ->
+                    list[x][y]
+                }
+            }
         }
     }
 }
@@ -229,3 +270,8 @@ fun <E> gridOf(width: Int, height: Int, vararg values: E): Grid<E> {
         values[x + y * width]
     }
 }
+
+/**
+ * This typealias is provided for symmetry with the Kotlin standard library.
+ */
+typealias MutableGrid<E> = Grid.Mutable<E>
